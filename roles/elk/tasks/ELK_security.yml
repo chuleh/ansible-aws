@@ -1,0 +1,40 @@
+---
+- name: Downloading License and Shield plugins
+  get_url:
+    url: "{{ item }}"
+    dest: /tmp/
+    mode: 0755
+  with_items:
+    - "https://download.elastic.co/elasticsearch/release/org/elasticsearch/plugin/license/2.4.4/license-2.4.4.zip"
+    - "https://download.elastic.co/elasticsearch/release/org/elasticsearch/plugin/shield/2.4.4/shield-2.4.4.zip"
+
+- name: Enabling shield
+  shell: '${ES_HOME}/elasticsearch-plugin install file://{{ item }}'
+  register: es_installplugin
+  failed_when: "'ERROR' in es_installplugin.stdout"
+  with_items:
+    - "/tmp/license-2.4.4.zip"
+    - "/tmp/shield-2.4.4.zip"
+
+- name: Copying password script
+  template: 
+    src: elk_passwords.j2
+    dest: /tmp/elk_passwords.sh
+    owner: root
+    mode: 0755
+
+- name: Set passwords
+  shell: "/tmp/elk_passwords.sh"
+
+- name: Generating keys
+  shell: "${ES_HOME}/x-pack/syskeygen"
+  register: es_syskeygen
+  failed_when: "'ERROR' in es_syskeygen.stdout"
+
+- name: Enabling auditting
+  lineinfile:
+    dest: "/etc/elasticsearch/elasticsearch.yml"
+    line: "xpack.security.audit.enabled: true"
+    state: present
+  notify: Restart ElasticSearch
+  when: elk_security  

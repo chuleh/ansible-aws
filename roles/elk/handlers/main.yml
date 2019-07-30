@@ -1,0 +1,21 @@
+---
+- name: Enabling Elastic Search daemon
+  service:
+    name: "{{ elasticsearch_daemon }}"
+    enabled: yes
+    state: started
+
+- name: Restart ElasticSearch
+  service:
+    name: "{{ elasticsearch_daemon }}"
+    state: restarted
+
+- name: Restart Kibana
+  service:
+    name: "{{ kibana_daemon }}"
+    state: restarted
+
+- name: Installing Beats dashboards on kibana
+  shell: /tmp/beats-dashboards-5.4.0/load.sh
+  ignore_errors: True
+

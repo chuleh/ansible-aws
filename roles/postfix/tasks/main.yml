@@ -1,0 +1,61 @@
+---
+- name: update cache > 1 hour
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install postfix, mailutils and sasl
+  apt:
+    name={{ item }} state=present
+  with_items:
+    - mailutils
+    - postfix
+    - libsasl2-modules
+
+- name: update postfix config files
+  lineinfile:
+    dest: "{{ postfix_config_file }}"
+    line: "{{ item.name }} = {{ item.value }}"
+    regexp: "^{{ item.name }} ="
+  with_items:
+    - name: inet_interfaces
+      value: "{{ postfix_inet_interfaces }}"
+    - name: inet_protocols
+      value: "{{ postfix_inet_protocols }}"
+    - name:  mydestination
+      value: "{{ postfix_mydestination }}"
+    - name: mydomain
+      value: "{{ postfix_mydomain }}"
+    - name: myhostname
+      value: "{{ postfix_myhostname }}"
+    - name: myorigin
+      value: "{{ postfix_myorigin }}"
+
+- name: update sasl config rules
+  lineinfile:
+    dest: "{{ postfix_config_file }}"
+    line: "{{ item.name }} = {{ item.value }}"
+    regexp: "^{{ item.name }} ="
+  with_items:
+    - name: relayhost
+      value: "{{ sasl_relayhost }}"
+    - name: smtp_sasl_auth_enable
+      value: "{{ sasl_auth_enable }}"
+    - name: smtp_sasl_security_options
+      value: "{{ sasl_security_options }}"
+    - name: smtp_sasl_password_maps
+      value: "{{ sasl_password_maps }}"
+    - name: smtp_use_tls
+      value: "{{ sasl_use_tls }}"
+    - name: smtp_tls_security_level
+      value: "{{ sasl_tls_security_level }}"
+    - name: smtp_tls_note_starttls_offer
+      value: "{{ sasl_tls_note_starttls_offer }}"
+  notify: restart postfix
+
+
+- name: ensure postfix is enabled and started
+  service:
+    name: postfix
+    state: "{{ postfix_service_state }}"
+    enabled: "{{ postfix_service_enabled }}"

@@ -1,0 +1,48 @@
+---
+- name: Ensure Kibana logdir is present
+  file:
+    path:  "{{ kibana_path_logs }}"
+    state: directory
+    owner: kibana
+    group: kibana
+    mode: 0755
+
+- template: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: kibana
+    mode: 0640
+  with_items:
+    - { src: "etc/kibana/kibana.j2", dest: "/etc/kibana/kibana.yml" }
+
+- name: Install Kibana X-pack plugin
+  shell: "/usr/share/kibana/bin/kibana-plugin install --silent --batch x-pack "
+  register: xpack_state
+  failed_when: "'ERROR' in xpack_state.stdout and 'already exists' not in xpack_state.stdout" 
+  notify: Restart Kibana
+
+- name: Sending Beats dashboards to kibana
+  unarchive:
+    src: https://artifacts.elastic.co/downloads/beats/beats-dashboards/beats-dashboards-5.4.0.zip
+    dest: /tmp/
+    remote_src: True
+    keep_newer: yes
+
+- name: Uploading dashboard import script
+  template: 
+    src: load.sh
+    dest: /tmp/beats-dashboards-5.4.0
+    mode: 0755
+    owner: root
+  notify: Installing Beats dashboards on kibana
+
+- name: Uploading dashboards to Kibana
+  shell: "/tmp/beats-dashboards-5.4.0/load.sh"
+  register: kibana_dashboards
+  failed_when: "'ERROR' in kibana_dashboards.stdout" 
+
+- name: Restart kibana
+  service:
+    name: "{{ kibana_daemon }}.service"
+    state: restarted

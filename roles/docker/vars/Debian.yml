@@ -1,0 +1,11 @@
+os_distribution_docker:
+  - docker
+  - docker-engine
+  - "docker.io"
+
+needed_packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - software-properties-common
+  - linux-image-extra-virtual

@@ -1,0 +1,68 @@
+---
+- name: Ensure Logstash logdir is present
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: logstash
+    group: logstash
+    mode: 0775
+  with_items:
+    - "{{ logstash_path_logs }}"
+    - "{{ logstash_path_data }}"
+    - "{{ logstash_path_data }}/queue"
+
+- name: Excluding logstash default file
+  file:
+    path: /etc/default/logstash
+    state: absent
+
+- copy: 
+    src: "etc/logstash/conf.d"
+    dest: "/etc/logstash/"
+    owner: logstash
+    group: logstash
+    mode: 0644
+    force: yes
+
+- template: 
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - { src: "etc/logstash/logstash.j2", dest: "/etc/logstash/logstash.yml" }
+    - { src: "etc/logstash/log4j2.j2", dest: "/etc/logstash/log4j2.properties" }    
+
+- name: Ensure LOGSTASH_HOME is declared
+  lineinfile:
+    dest: /etc/environment
+    line: 'LOGSTASH_HOME="/usr/share/logstash/bin"'
+
+- name: Restart logstash
+  service:
+    name: "{{ logstash_daemon }}.service"
+    state: restarted
+  when: sysv.stdout == "systemd"
+
+- name: Restart logstash (init)
+  service:
+    name: "{{ logstash_daemon }}"
+    state: restarted
+  when: sysv.stdout == "init"
+
+- wait_for:
+    host: "{{ elasticsearch_host }}"
+    port: "{{ elasticsearch_port }}"
+    delay: 30
+  when: elk_standalone
+
+- name: Install Logstash plugins
+  shell: '${LOGSTASH_HOME}/logstash-plugin install "{{ item }}"'
+  register: beats_state
+  failed_when: "'ERROR' in beats_state.stdout and 'already exists' not in beats_state.stdout"
+  with_items:
+    - "{{ logstash_default_plugins }}"
+    - "{{ logstash_user_plugins }}"
+  tags:
+    - logstash-plugins

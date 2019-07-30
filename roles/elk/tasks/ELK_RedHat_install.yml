@@ -1,0 +1,15 @@
+---
+- name: Ensure Needed packages is installed
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "{{ needed_packages_rhel }}"
+
+- name: Adding ElasticSearch repo
+  yum_repository:
+    name: somerepo
+    description: Some YUM repo
+    baseurl: https://artifacts.elastic.co/packages/{{ elasticsearch_major_version }}/yum
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    gpgcheck: yes

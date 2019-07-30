@@ -1,0 +1,58 @@
+---
+#elk_standalone: Define "true" or "false" to prepare environment as ELK standalone. If prefer "false", you should type wich ELK package(s) you wish install using variable elk_packages
+elk_standalone: []
+elk_packages:
+  - { pkg: "elasticsearch", daemon: "elasticsearch" }
+  - { pkg: "kibana", daemon: "kibana" }
+  - { pkg: "logstash", daemon: "logstash" }
+
+#Cluster: Defines if your ES is on cluster. Set "enable" and type a name and use "Elasticsearch_cluster_nodes" to set wich servers is part of cluster.
+#IMPORTANT: FOR elastic_cluster_nodes, use ip or node name with '""' format.
+elasticsearch_cluster: false
+elasticsearch_clustername: "es_cluster"
+elasticsearch_cluster_nodes:
+  - '"ip.for.es1"'
+  - '"ip.for.es2"'
+  - '"ip.for.es3"'
+
+
+#If JAVA is not installed (or older than 8), this is the version will be installed
+#Heap Size is the allocated memory for Elasticsearch; Default is 1Gb, but you may want more than this.
+java_heap_size: "1g"
+java_version_install: 8
+elasticsearch_major_version: "6.x"
+
+#Set a new password to ELK.
+#Remember to adjust users on elk_user variable, as seen on lines below.
+elk_security: false
+elk_pass: s3cr3t
+
+elk_users:
+  - { name: "User", full_name: "Usuario Kibana", pass: "P4ssw0rd" }
+
+#ES Configuration
+elasticsearch_port: 9200
+elasticsearch_host: localhost
+elasticsearch_path_data: "/var/lib/elasticsearch"
+elasticsearch_path_logs: "/var/log/elasticsearch"
+
+#Kibana Configuration
+kibana_port: 5601
+kibana_index: ".kibana"
+kibana_path_logs: "/var/log/kibana"
+
+#Logstash
+beats_port: 5044
+logstash_path_config: "/etc/logstash/conf.d"
+logstash_path_data: "/var/lib/logstash"
+logstash_path_logs: "/var/log/logstash"
+logstash_home: "/usr/share/logstash/bin"
+
+#Persistence: Enable or not Logstash persistent queues - as seen on << https://www.elastic.co/guide/en/logstash/current/persistent-queues.html >> . Default is false ( logs queue will be stored on memory )
+logstash_persistence: false
+logstash_persistence_path: "{{ logstash_path_data }}/queue"
+#Size of persistence
+logstash_persistence_maxbytes: "1024mb"
+logstash_user_plugins: []
+
+filebeat_tags: []

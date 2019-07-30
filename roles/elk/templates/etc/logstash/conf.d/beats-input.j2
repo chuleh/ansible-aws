@@ -1,0 +1,22 @@
+input {
+  beats {
+    port => {{ beats_port }}
+  }
+}
+
+output {
+  stdout { codec => rubydebug { metadata => true } }
+  if "_grokparsefailure" not in [tags] {
+    elasticsearch {
+      hosts => "{{ elasticsearch_host }}:{{ elasticsearch_port }}"
+      manage_template => false
+      index => "%{[@metadata][beat]}-%{+YYYY.MM.dd}"
+      document_type => "%{[@metadata][type]}"
+    }
+  }
+  if "beats_input_codec_plain_applied" in [tags] {
+     mutate {
+      remove_tag => ["beats_input_codec_plain_applied"]
+    }
+  }
+}

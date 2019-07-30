@@ -1,0 +1,11 @@
+---
+- name: RedHat - Ensure Java is installed
+  package:
+    name: "java-1.{{ java_version_install }}.0-openjdk"
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: Get JAVA_HOME RedHat
+  shell: "update-alternatives --list | grep '^java' | awk '{print $3}'"
+  register: java_home
+  when: ansible_os_family == 'RedHat'  

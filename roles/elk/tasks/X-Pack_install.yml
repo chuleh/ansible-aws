@@ -1,0 +1,12 @@
+---
+- name: Install X-pack plugin
+  shell: '${ES_HOME}/elasticsearch-plugin install --silent --batch x-pack'
+  register: xpack_state
+  failed_when: "'ERROR' in xpack_state.stdout and 'already exists' not in xpack_state.stdout"
+  notify: Restart ElasticSearch
+
+- name: Install Kibana X-pack plugin
+  shell: "/usr/share/kibana/bin/kibana-plugin install --silent --batch x-pack "
+  register: xpack_state
+  failed_when: "'ERROR' in xpack_state.stdout and 'already exists' not in xpack_state.stdout" 
+  notify: Restart Kibana

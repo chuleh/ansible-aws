@@ -1,0 +1,29 @@
+---
+- name: Installation steps.
+  include: "ES_{{ ansible_os_family }}_install.yml"
+
+- name: Ensure Beats is installed.
+  package:
+    name: "{{ item.name }}"
+    state: present
+  with_items:
+    - "{{ elk_beat_packages }}"
+
+- name: Add Beats configuration file.
+  template:
+    src: "etc/{{ item.name }}/{{ item.name }}.j2"
+    dest: "/etc/{{ item.name }}/{{ item.name }}.yml"
+    owner: root
+    group: root
+    force: yes
+    mode: 0600
+  with_items:
+    - "{{ elk_beat_packages }}"
+
+- name: Enabling ElK daemon
+  service:
+    name: "{{ item.daemon }}"
+    enabled: yes
+    state: restarted
+  with_items:
+    - "{{ elk_beat_packages }}"

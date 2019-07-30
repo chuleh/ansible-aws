@@ -1,0 +1,7 @@
+---
+- include: "{{ ansible_os_family }}.yml" 
+
+- name: Ensure JAVA_HOME is declared
+  lineinfile:
+    dest: /etc/environment
+    line: 'JAVA_HOME="{{ java_home.stdout }}"'

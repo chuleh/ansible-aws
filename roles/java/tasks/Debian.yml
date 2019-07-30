@@ -1,0 +1,39 @@
+---
+- name: Add Oracle repositories for Java
+  apt_repository:
+    repo: 'ppa:webupd8team/java'
+
+- name: Adjust on Java Repository
+  copy:
+    src: "java8_updatedir.sh"
+    dest: "/tmp/java8_updatedir.sh"
+    owner: root
+    group: root
+    mode: 0777
+    force: yes
+  when: java_version_install == 8
+  tags:
+    - java8
+
+- name: Adjust on Java Repository
+  command: /tmp/java8_updatedir.sh
+  ignore_errors: yes
+  when: java_version_install == 8
+  tags:
+    - java8
+
+- name: Automatically select the Oracle License
+  shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+
+- name: Ensure Java is installed
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "oracle-java{{ java_version_install }}-installer"
+    - "openjdk-{{ java_version_install }}-jdk-headless"
+    - "oracle-java{{ java_version_install }}-set-default"
+
+- name: Get JAVA_HOME Debian
+  shell: 'update-alternatives --query java | grep "Value: " | grep -o "/.*/jre"'
+  register: java_home

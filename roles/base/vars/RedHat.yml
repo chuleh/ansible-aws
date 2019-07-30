@@ -1,0 +1,12 @@
+---
+epel_repo: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
+
+epel_repo_key: "/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}"
+
+rhel_packages:
+  - iotop
+  - screen
+  - rsync
+  - git
+  - vim
+  - htop

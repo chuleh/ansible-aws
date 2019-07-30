@@ -1,0 +1,20 @@
+---
+elasticsearch_major_version: 5
+
+#ES Defaults - Sends file to specific destination.
+#Select "logstash" or "elasticsearch":
+filebeat_sends_to: "logstash"
+#Filebeat_tags - Adds at filebeat.yml . Tags makes it easy to select specific events in Kibana or apply conditional filtering in Logstash - as seen on < https://www.elastic.co/guide/en/beats/filebeat/current/configuration-filebeat-options.html#_tags >
+#filebeat_tags: 
+#  - "a_tag"
+#  -  "another_tag"
+
+elasticsearch_port: 9200
+logstash_port: 5044
+
+elasticsearch_host: localhost
+logstash_host: localhost
+
+logs:
+  - /var/log/syslog
+  - /var/log/auth.log

@@ -1,0 +1,13 @@
+---
+- name: Get Java Version
+  shell: java -version 2>&1 |awk 'NR==1{ gsub(/"/,""); print $3 }' | cut -d . -f 2
+  register: java_version
+  ignore_errors: true
+
+- name: Get JAVACMD
+  shell: echo $JAVACMD
+  register: javacmd
+
+- name: Get wich SysV is running
+  shell: "ps -p 1 | tail -n 1 | awk '{print $4}'"
+  register: sysv 

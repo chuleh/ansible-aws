@@ -1,0 +1,17 @@
+---
+- name: Sending Beats dashboards to kibana
+  unarchive:
+    src: https://artifacts.elastic.co/downloads/beats/beats-dashboards/beats-dashboards-5.4.0.zip
+    dest: /tmp/
+    remote_src: True
+    keep_newer: yes
+  when: kibana_register|bool == true
+
+- name: Uploading dashboard import script
+  template: 
+    src: load.sh
+    dest: /tmp/beats-dashboards-5.4.0
+    mode: 0755
+    owner: root
+  notify: Installing Beats dashboards on kibana
+  when: kibana_register|bool == true

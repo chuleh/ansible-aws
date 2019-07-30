@@ -1,0 +1,35 @@
+---
+- name: ES config File template
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: elasticsearch
+    mode: 0640
+  with_items:
+    - { src: "etc/elasticsearch/elasticsearch.j2", dest: "/etc/elasticsearch/elasticsearch.yml" }
+    - { src: "etc/elasticsearch/jvm.j2", dest: "/etc/elasticsearch/jvm.options" }
+
+- name: Configure ES memory consumption.
+  lineinfile:
+    dest: "/etc/default/elasticsearch"
+    line: "MAX_LOCKED_MEMORY=unlimited"
+    state: present
+  notify: Enabling Elastic Search daemon
+
+- name: Configure ES memory consumption.
+  replace:
+    dest: /usr/lib/systemd/system/elasticsearch.service
+    regexp: '^\#LimitMEMLOCK=infinity'
+    replace: "LimitMEMLOCK=infinity"  
+    backup: yes
+  when: sysv.stdout == "systemd"
+
+- name: Ensure ES_HOME is declared
+  lineinfile:
+    dest: /etc/environment
+    line: 'ES_HOME="/usr/share/elasticsearch/bin/"'
+
+- name: Reconfigure SystemD
+  shell: "systemctl daemon-reload"
+  when:  sysv.stdout == "systemd"

@@ -1,0 +1,22 @@
+---
+#elasticsearch_package: elasticsearch 
+elasticsearch_daemon: elasticsearch
+kibana_daemon: kibana
+logstash_daemon: logstash
+
+needed_packages_debian:
+  - apt-transport-https
+  - unzip
+
+needed_packages_rhel:
+  - unzip
+
+#ELK User: If security will be implemented, you must change default users and passwords on ELK (elastic//changeme)
+elk_default_user: elastic
+elk_default_pass: changeme
+
+logstash_default_plugins:
+  - logstash-input-beats
+  - logstash-filter-multiline
+  - logstash-patterns-core
+  - logstash-filter-geoip

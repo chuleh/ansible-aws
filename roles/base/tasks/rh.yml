@@ -1,0 +1,23 @@
+---
+- name: enable epel repos
+  yum:
+    name: "{{ epel_repo }}"
+    state: present
+#
+#- name: import gpg key
+#  rpm_key:
+#    key: "{{ epel_repo_key }}"
+#    state: present
+#    dest=/etc/pki/rpm-gpg/
+#    owner=root
+#    group=root
+#    mode=644
+
+    #- name: update yum
+    #  yum:
+    #    update_cache: yes
+
+- name: install base apps
+  yum: name="{{ item }}" state=present
+  with_items:
+    - "{{ rhel_packages }}"

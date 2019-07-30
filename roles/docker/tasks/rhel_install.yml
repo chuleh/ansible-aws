@@ -1,0 +1,9 @@
+- name: Adding Docker repo
+  yum_repository:
+     name: docker
+     description: Docker Repo
+     baseurl:  https://download.docker.com/linux/{{ ansible_distribution|lower }}/docker-{{docker_edition}}.repo
+
+- name: Enabling repo
+  shell: "sudo dnf config-manager --add-repo https://download.docker.com/linux/{{ ansible_distribution|lower }}/docker-{{ docker_edition }}.repo"
+  ignore_errors: True

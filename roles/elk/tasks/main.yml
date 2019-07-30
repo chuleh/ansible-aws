@@ -1,0 +1,39 @@
+---
+- name: Get ENV information.
+  include: get_environment.yml
+  tags:
+  - kibana
+  - logstash
+  - elasticsearch
+
+- name: Installation steps.
+  include: "ELK_{{ ansible_os_family }}_install.yml"
+
+- name: Ensure packages are installed
+  package:
+    name: "{{ item.pkg }}"
+    state: present
+  with_items:
+    - "{{ elk_packages }}"
+
+- name: Install ELK
+  include: "ELK_install.yml"
+  when: elk_standalone
+
+- name: Install ELK
+  include: "{{ item.pkg }}_configure.yml"
+  when: not elk_standalone
+  with_items:
+    - "{{ elk_packages }}" 
+  tags:
+    - kibana
+    - logstash
+    - elasticsearch
+
+- name: Enabling ElK daemon
+  service:
+    name: "{{ item.daemon }}"
+    enabled: yes
+    state: started
+  with_items:
+    - "{{ elk_packages }}"

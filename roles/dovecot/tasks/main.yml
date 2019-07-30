@@ -1,0 +1,70 @@
+---
+- name: update cache > 1 hour
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: install dovecot && passlib
+  apt: name={{ item }} state=absent
+  with_items:
+    - dovecot-imapd
+    - dovecot-lmtpd
+    - python-passlib
+
+- name: copy config files
+  template:
+    src: "{{ item }}.j2"
+    dest: /etc/dovecot/conf.d/{{ item }}
+    backup: yes
+  notify: restart dovecot
+  with_items:
+    - 10-auth.conf
+    - 10-mail.conf
+    - 10-master.conf
+
+- name: Creates default_login_user group
+  group:
+    name: "{{ dovecot_default_login_user.group }}"
+    gid: "{{ dovecot_default_login_user.gid | default(omit) }}"
+  when: dovecot_default_login_user
+
+- name: Creates default_login_user user
+  user:
+    name: "{{ dovecot_default_login_user.user }}"
+    group: "{{ dovecot_default_login_user.group }}"
+    uid: "{{ dovecot_default_login_user.uid | default(omit) }}"
+    home: "{{ dovecot_default_login_user.home | default(omit)  }}"
+  when: dovecot_default_login_user
+
+- name: Adds local.conf
+  template:
+    src: local.conf.j2
+    dest: /etc/dovecot/local.conf
+    backup: yes
+  notify: restart dovecot
+
+- name: Ensure passwd files exist (at least empty)
+  file:
+    path: /etc/dovecot/{{ item }}
+    state: touch
+  changed_when: false
+  with_items:
+    - passwd.master
+    - passwd
+
+- name: Creates master users hashes
+  htpasswd:
+    path: /etc/dovecot/passwd.master
+    name: "{{ item.key }}"
+    password: "{{ item.value }}"
+    crypt_scheme: ldap_sha1
+  with_dict: "{{ dovecot_master_users }}"
+
+- name: Creates users hashes
+  htpasswd:
+    path: /etc/dovecot/passwd
+    name: "{{ item.key }}"
+    password: "{{ item.value }}"
+    crypt_scheme: ldap_sha1
+  with_dict: "{{ dovecot_users }}"
+

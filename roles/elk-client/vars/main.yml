@@ -1,0 +1,10 @@
+---
+#Beats Package. You can install one or all
+# filebeat, metricbeat, packetbeat, winlogbeat or heartbeat.
+# We already have the comunity beats published on https://www.elastic.co/guide/en/beats/libbeat/current/community-beats.html
+elk_beat_packages:
+  - { name: "filebeat", daemon: "filebeat" }
+#  - { name: "metricbeat", daemon: "metricbeat" }
+#  - { name: "packetbeat", daemon: "packetbeat" }
+#  - { name: "winlogbeat", daemon: "winlogbeat" }
+#  - { name: "heartbeat", daemon: "heartbeat" }

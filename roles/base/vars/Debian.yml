@@ -1,0 +1,8 @@
+---
+deb_packages:
+  - iotop
+  - htop
+  - vim
+  - git
+  - rsync
+  - screen

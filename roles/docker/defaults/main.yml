@@ -1,0 +1,15 @@
+---
+#Docker Edition: Choose between "ee" or "ce"
+docker_edition: 'ce'
+
+#Docker Version: To use with ee
+docker_version: "17.06"
+
+#Docker_Repourl: Tells where is Docker repositories. Default is community repository (for ce). You must configure this when you're using Docker ee
+docker_repourl: "https://download.docker.com/linux"
+
+docker_install_docker_compose: False
+
+docker_users: []
+
+docker_options: []

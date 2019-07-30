@@ -1,0 +1,15 @@
+---
+- name: create EFS directory
+  file:
+    path: /mnt/efs/lcasaretto.com/_site/
+    state: directory
+    mode: 0755
+
+- name: mount EFS
+  mount:
+    name: /mnt/efs/
+    src: fs-3e626375.efs.us-east-1.amazonaws.com:/
+    fstype: nfs4
+    opts: nfsvers=4.1
+    state: mounted
+

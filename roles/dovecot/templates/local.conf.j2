@@ -1,0 +1,42 @@
+{% for db in dovecot_passdbs %}
+passdb {
+{%   for key in db %}
+  {{ key }} = {{ db[key] }}
+{%    endfor %}
+}
+{% endfor %}
+
+{% for db in dovecot_userdbs %}
+userdb {
+{%   for key in db %}
+  {{ key }} = {{ db[key] }}
+{%    endfor %}
+}
+{% endfor %}
+
+disable_plaintext_auth = {{ dovecot_disable_plaintext_auth }}
+
+{% if dovecot_lmtp_listener %}
+protocols = lmtp imap
+
+service lmtp {
+  unix_listener {{ dovecot_lmtp_listener.path }} {
+    mode = {{ dovecot_lmtp_listener.mode }}
+    group = {{ dovecot_lmtp_listener.group }}
+    user = {{ dovecot_lmtp_listener.user }}
+  }
+}
+
+protocol lmtp {
+  postmaster_address = {{ dovecot_lmtp_listener.postmaster }}
+{%  if "mail_plugins" in dovecot_lmtp_listener %}
+  mail_plugins = {{ dovecot_lmtp_listener.mail_plugins | join(" ") }}
+{%  endif %}
+}
+{% endif %}
+
+{% if dovecot_ssl %}
+ssl = yes
+ssl_cert = <{{ dovecot_ssl_certificate_path }}
+ssl_key = <{{ dovecot_ssl_key_path }}
+{% endif %}

@@ -1,0 +1,74 @@
+---
+- name: Ensure Logstash logdir is present
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    mode: 0775
+  with_items:
+    - "{{ elasticsearch_path_data }}"
+    - "{{ elasticsearch_path_logs }}"
+
+- name: ES config File template
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: elasticsearch
+    mode: 0640
+  with_items:
+    - { src: "etc/elasticsearch/elasticsearch.j2", dest: "/etc/elasticsearch/elasticsearch.yml" }
+    - { src: "etc/elasticsearch/jvm.j2", dest: "/etc/elasticsearch/jvm.options" }
+
+- name: Ensure ElasticSearch config file is present
+  file:
+    path: "/etc/default/elasticsearch"
+    state: touch
+    owner: elasticsearch
+    group: elasticsearch
+    mode: 0775
+
+- name: Configure ES memory consumption.
+  lineinfile:
+    dest: "/etc/default/elasticsearch"
+    line: "MAX_LOCKED_MEMORY=unlimited"
+    state: present
+  notify: Enabling Elastic Search daemon
+
+- name: Configure ES init script.
+  replace:
+    dest: /usr/lib/systemd/system/elasticsearch.service
+    regexp: '^\#LimitMEMLOCK=infinity'
+    replace: "LimitMEMLOCK=infinity"
+    backup: yes
+  when: sysv.stdout == "systemd"
+
+- name: Ensure ES_HOME is declared
+  lineinfile:
+    dest: /etc/environment
+    line: 'ES_HOME="/usr/share/elasticsearch/bin/"'
+
+- name: Reconfigure SystemD
+  shell: "systemctl daemon-reload"
+  when:  sysv.stdout == "systemd"
+
+- name: Install X-pack plugin
+  shell: '${ES_HOME}/elasticsearch-plugin install --silent --batch x-pack'
+  register: xpack_state
+  failed_when: "'ERROR' in xpack_state.stdout and 'already exists' not in xpack_state.stdout"
+  notify: Restart ElasticSearch
+
+#- name: Enabling auditting
+#  lineinfile:
+#    dest: "/etc/elasticsearch/elasticsearch.yml"
+#    line: "xpack.security.audit.enabled: true"
+#    state: present
+#  notify: Restart ElasticSearch
+#  when: elk_security
+
+- name: Restart ElasticSearch
+  service:
+    name: "{{ elasticsearch_daemon }}"
+    state: restarted
+  when: elk_standalone

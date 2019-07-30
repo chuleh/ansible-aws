@@ -1,0 +1,13 @@
+# main includer
+---
+- hosts: all
+  become: True
+  roles:
+    - { role: jenkins, tags: ['jenkins'] }
+    - { role: base, tags: ['base','common'] }
+    - { role: jekyll, tags: ['jekyll'] }
+    - { role: nginx, tags: ['nginx', 'web'] }
+    - { role: postfix, tags: ['postfix'] }
+    - { role: dovecot, tags: ['dovecot'] }
+    - { role: docker, tags: ['docker'] }
+    - { role: java, tags: ['java'] }

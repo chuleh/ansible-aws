@@ -1,0 +1,26 @@
+---
+
+- name: Adding Docker GPG key
+  apt_key:
+    url: "{{ docker_repourl }}/ubuntu/gpg"
+    state: present
+    validate_certs: false
+  ignore_errors: true
+
+- name: Add APT repository
+  apt_repository:
+    repo: "deb [arch=amd64] {{ docker_repourl }}/ubuntu {{ ansible_distribution_release }} stable"
+    update_cache: yes
+  when: docker_edition != "ee" and ansible_distribution_release != "bionic"
+
+- name: Add APT Repository (Ubuntu 18)
+  apt_repository:
+    repo: "deb [arch=amd64] {{ docker_repourl }}/ubuntu artful stable"
+    update_cache: yes
+  when: docker_edition != "ee" and ansible_distribution_release == "bionic"
+
+- name: Add APT repository (EE)
+  apt_repository:
+    repo: "deb [arch=amd64] {{ docker_repourl }}/ubuntu {{ ansible_distribution_release }} stable-{{ docker_version }}"
+    update_cache: yes
+  when: docker_edition == "ee"

@@ -1,0 +1,9 @@
+- name: update cache if more than one hour
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install base apps
+  apt: name="{{ item }}" state=present
+  with_items:
+    - "{{ deb_packages }}"

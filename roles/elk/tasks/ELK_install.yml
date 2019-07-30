@@ -1,0 +1,8 @@
+- name: Configure ES
+  include: elasticsearch_configure.yml
+
+- name: Configure Kibana
+  include: kibana_configure.yml
+
+- name: Configure Logstash
+  include: logstash_configure.yml

@@ -1,0 +1,12 @@
+server {
+  listen 80;
+  server_name {{ site.name }} {{ site.serveralias }};
+  root {{ site.rootdir }};
+  access_log  /var/log/nginx/{{ site.name }}-access.log;
+  error_log  /var/log/nginx/{{ site.name }}-error.log;
+
+  gzip             on;
+  gzip_comp_level  3;
+  gzip_types       text/html text/plain text/css image/*;
+
+}

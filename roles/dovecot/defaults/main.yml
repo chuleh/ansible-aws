@@ -1,0 +1,63 @@
+dovecot_auth_master_user_separator: False
+dovecot_disable_plaintext_auth: "yes"
+
+# dovecot_passdbs
+# e.g.
+# dovecot_passdbs:
+#   - driver: passwd-file
+#     args: "scheme=SHA1 /etc/dovecot/passwd.master"
+#     master: "yes"
+#     pass: "yes"
+#   - driver: passwd-file
+#     args: "scheme=SHA1 /etc/dovecot/passwd"
+
+dovecot_passdbs: []
+dovecot_userdbs: []
+
+dovecot_mail_location: "mbox:~/mail:INBOX=/var/mail/%u"
+
+dovecot_mail_access_groups: False
+dovecot_first_valid_uid: False
+dovecot_first_valid_gid: False
+
+# dovecot_default_login_user
+# e.g.
+# dovecot_default_login_user:
+#   user: foo
+#   group: foo
+#   uid: 2222
+#   gid: 2222
+dovecot_default_login_user: False
+
+dovecot_master_users_file: /etc/dovecot/passwd.master
+
+# dovecot_master_users:
+#   foo: foopass
+#   bar: barpass
+dovecot_master_users: {}
+dovecot_users: {}
+
+# lmtp config
+#dovecot_lmtp_listener:
+#  path: /var/spool/postfix/private/dovecot-lmtp
+#  mode: 0666
+#  group: postfix
+#  user: postfix
+#  postmaster: foo@bar.com
+# mail_plugins: sieve quota (optionnal)
+
+dovecot_lmtp_listener: False
+
+# SSL config
+# If dovecot_ssl is set to yes, add certificate/key in proper variables
+# If you choose to leave variables empty, a certificate will be automatically generated
+# for "dovecot_ssl_cert_subject"
+dovecot_ssl: no
+dovecot_ssl_certificate: False
+dovecot_ssl_key: False
+dovecot_ssl_cert_subject: False
+dovecot_ssl_cert_duration: False
+
+dovecot_ssl_certificate_path: /etc/dovecot/certs/dovecot.pem
+dovecot_ssl_key_path: /etc/dovecot/private/dovecot.pem
+

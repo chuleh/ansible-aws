@@ -1,0 +1,27 @@
+# install jekyll and create blog
+---
+- name: run apt-get update
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install jekyll via gem
+  gem:
+    name: jekyll
+    state: present
+
+- name: install bundler
+  gem:
+    name: bundler
+    state: present
+
+- name: create lcasaretto.com homedir
+  file:
+    path: /opt/lcasaretto.com/
+    state: directory
+    mode: 0755
+    owner: chuleh
+    group: chuleh
+
+- name: create blog directory with jekyll
+  command: jekyll new /opt/lcasaretto.com/

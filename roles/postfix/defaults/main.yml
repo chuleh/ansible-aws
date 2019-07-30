@@ -1,0 +1,23 @@
+---
+# postfix main.cf
+postfix_config_file: /etc/postfix/main.cf
+
+postfix_service_state: started
+postfix_service_enabled: true
+
+postfix_inet_interfaces: localhost
+postfix_inet_protocols: all
+
+postfix_mydestination: $myhostname, localhost.$mydomain, localhost, $mydomain
+postfix_mydomain: lcasaretto.com
+postfix_myhostname: lcasaretto.com
+postfix_myorigin: $mydomain
+
+# SASL
+sasl_relayhost: "[email-smtp.us-east-1.amazonaws.com]:587"
+sasl_auth_enable: "yes"
+sasl_security_options: "noanonymous"
+sasl_password_maps: "hash:/etc/postfix/sasl_passwd"
+sasl_use_tls: "yes"
+sasl_tls_security_level: encrypt
+sasl_tls_note_starttls_offer: "yes"

@@ -1,0 +1,25 @@
+---
+- name: run apt-get update
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: install nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: create config for site
+  template:
+    src: lcasaretto.com.j2
+    dest: /etc/nginx/sites-available/{{ site.name }}
+
+- name: symlink new site to sites-enabled/
+  file:
+    src: /etc/nginx/sites-available/{{ site.name }}
+    dest: /etc/nginx/sites-enabled/{{ site.name }}
+    state: link
+
+- name: check nginx config
+  command: nginx -t
+  notify: restart nginx

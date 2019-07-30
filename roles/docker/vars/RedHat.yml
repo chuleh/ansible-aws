@@ -1,0 +1,12 @@
+---
+os_distribution_docker:
+  - docker-common
+  - docker-selinux
+  - docker-engine-selinux
+  - docker-engine
+  - docker-ce
+
+needed_packages:
+  - yum-utils
+  - device-mapper-persistent-data
+  - lvm2

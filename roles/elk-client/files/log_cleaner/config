@@ -1,0 +1,44 @@
+###  ConfigFile ###
+### Ricardo Barbosa - 20170817 ###
+
+#BKP_FILENAME=$(hostname;)
+#PRUNNING_PERIOD="30"
+#BKP_MODE="incremental"
+
+
+
+##### Log dirs #####
+#Declare here each service will backuped up.
+LOG_TYPES="NODEJS_LOG JAVA_LOG KANNEL_LOG MYSQL_LOG WEBSERVER_LOG SERVICES_LOG ES_LOG"
+
+# Node
+NODEJS_LOG[0]="/home/ubuntu/.pm2/logs/"
+NODEJS_LOG[1]="/root/.pm2/logs/"
+# Java
+JAVA_LOG[0]="/var/log/api-push/"
+JAVA_LOG[1]="/var/log/api-sms/"
+# Kannel
+KANNEL_LOG[0]="/var/log/kannel/"
+KANNEL_LOG[1]="/tween/logs/kannel/"
+# Database
+MYSQL_LOG[0]="/var/log/mysql.log"
+# Apache, NginX
+WEBSERVER_LOG[0]="/var/log/apache2/"
+WEBSERVER_LOG[1]="/var/log/httpd"
+WEBSERVER_LOG[2]="/var/log/nginx/"
+# Sidekiq, Ror
+SERVICES_LOG[0]="/data/precios_bajos/shared/log/"
+SERVICES_LOG[1]="/var/log/postgresql/"
+# ElasticSearch
+ES_LOG[0]="/var/log/elasticsearch/"
+########################
+
+
+
+##### Exception Types #####
+BACKUPED_FILES="*.log.*"
+EXCEPTION_FILES="*.log.err"
+
+##### Storage Locations ######
+BKP_STORAGE_DIR="/tween/backuplogs/"
+S3_LOCATION="s3://tween-logs/"

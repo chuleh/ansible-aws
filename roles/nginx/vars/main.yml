@@ -1,0 +1,5 @@
+---
+site:
+  name: lcasaretto.com
+  serveralias: www.lcasaretto.com
+  rootdir: /mnt/efs/lcasaretto.com/_site/
